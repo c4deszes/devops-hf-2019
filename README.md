@@ -1,1 +1,52 @@
-# Devops Homework
+# Chat Backend
+
+Application entrypoint, allows the discovery and creation of chat rooms. Also used to serve the frontend files.
+
+This service has an integrated Consul agent, it will register using a random identifier.
+
+A service instance entry will look something like this
+
+	{
+		Name: 'chat-backend'
+		ID: 'chat-backend-abcdefghijk'
+		Tags: [ '1.0.0' ]
+	}
+
+## Running in development mode
+
+Run `npm run start-dev`, this is needed because it uses Typescript so there's no `start.js`
+
+The server can then be accessed at http://127.0.0.1:3000
+
+## Building
+
+Run `npm run build`
+
+The build output will be inside the `/dist` folder
+
+## Running
+
+Run `npm run start` from the project folder
+
+The server can then be accessed at http://127.0.0.1:8080
+
+## Using
+
+The service responds to the following requests
+
+|Method |Path |Response |Description
+|---|---|---|---|
+|GET |/api/rooms |`[{ID: '..'}, {ID: '..'}]` |Returns all the rooms
+|GET |/api/health |`{status: 'up'}` |Returns service health
+|POST |/api/create |`{ID: '..'}` |Creates a new room
+|GET |* |[index.html](/src/public/index.html) |Returns the homepage
+
+## Configuration
+
+Environmental variables used
+
+|Property |Default value
+|---|---|
+|PORT |8080
+|CONSUL_HOST |localhost
+|CONSUL_PORT |8500
