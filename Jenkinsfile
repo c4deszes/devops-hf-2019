@@ -1,4 +1,7 @@
 pipeline {
+	environment {
+		IMAGE_REPO = '' //
+	}
     agent {
         docker {
 			//This image contains the GraalVM installation
@@ -6,31 +9,34 @@ pipeline {
         }
     }
     stages {
-        stage('Build') { 
-            steps {
-                //maven build with -Pnative
-				//maybe skip tests
-            }
-            post {
-                success {
-                    archiveArtifacts(
-                        artifacts: ['target', 'src/main/docker'],
-                        onlyIfSuccessful: true,
-                        defaultExcludes: false
-                    )
-                    cleanWs()
-                }
-            }
-        }
-		stage('Create image') {
+		stage('Build Native') {
 			steps {
-				//sh docker build -f src/main/docker/Dockerfile.native -t <some tag>:version .
+				//sh mvn clean package -Pnative -Dnative-image.docker-build=true
+				//sh docker build -f src/main/docker/Dockerfile.native -t ${IMAGE_REPO}:native-${VERSION}
+
+				/*
+					NOTE: instructions are inside Dockerfile.native as well
+				*/
+			}
+			post {
+				success {
+					//docker push with credentials
+				}
 			}
 		}
-		stage('Publish image') {
+		stage('Build JVM') {
 			steps {
-				//docker push with credentials
+				//sh mvn clean package 
+				//sh docker build -f src/main/docker/Dockerfile.jvm -t ${IMAGE_REPO}:jvm-${VERSION}
 			}
+			post {
+				sucsess {
+					//docker push with credentials
+				}
+			}
+		}
+		post {
+			//clean workspace
 		}
     }
 }
