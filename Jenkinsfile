@@ -15,7 +15,7 @@ pipeline {
 				Currently there's docker operation that copies /build into /dist/public
 			*/
 
-			//sh docker build -t <repo>/chat-home:<version>
+			//sh docker build -t <repo>/chat-home:<version> .
 		}
 		stage('Publish') {
 			//withCredentials
