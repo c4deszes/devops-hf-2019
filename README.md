@@ -2,6 +2,10 @@
 
 User interface for the chat service
 
+## Running
+
+Run `npm start`
+
 ## Building
 
 1. Run `npm run build`

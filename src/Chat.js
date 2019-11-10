@@ -31,12 +31,37 @@ const styles = theme => ({
 
 class Chat extends React.Component {
 
-	componentWillMount() {
-		//try connecting to websocket
+	componentDidMount() {
+		const id = this.props.match.params.id;
+		let url = new URL('/r/' + id + '/chat', window.location.href);
+		url.protocol = url.protocol.replace('http', 'ws');
+
+		let ws = new WebSocket(url.href);
+
+		ws.onopen = () => {
+			this.setState({ws: ws});
+		}
+		
+		ws.onmessage = (event) => {
+			const message = event.data;
+			console.log('Received:' + message);
+		}
+
+		ws.onerror = (error) => {
+			
+		}
+
+		ws.onclose = () => {
+			
+		}
+	}
+
+	handleClose() {
+		
 	}
 
 	componentWillUnmount() {
-		//disconnect
+		this.ws.close();
 	}
 
 	render() {

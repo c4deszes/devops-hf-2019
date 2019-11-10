@@ -49,7 +49,7 @@ class Home extends React.Component {
 	updateRooms = () => {
 		this.setState({rooms: null});
 		setTimeout(() => {
-		axios.get('http://127.0.0.1:3000/api/rooms')
+		axios.get('/api/rooms')
 			 .then((response) => {
 				 //store state
 				 this.setState({rooms: response.data});
@@ -71,9 +71,19 @@ class Home extends React.Component {
 		return views;
 	}
 
+	createRoom() {
+		setTimeout(() => {
+		axios.post('/api/create')
+				.then((response) => {
+					let {ID} = response.data;
+					this.props.history.push('/chat/' + ID);
+				});
+			}, 1000);
+	}
+
 	renderLoading() {
 		let views = [];
-		for(let i=0;i<10;i++) {
+		for(let i=0;i<5;i++) {
 			views.push(
 				<RoomCardSkeleton />
 			);
@@ -107,7 +117,7 @@ class Home extends React.Component {
 					{this.state.rooms ? this.renderRooms(this.state.rooms) : this.renderLoading()}
 				</Box>
 	
-				<Fab color="primary" size="large" className={classes.fab}>
+				<Fab color="primary" size="large" className={classes.fab} onClick={() => this.createRoom()}>
 					<AddIcon />
 				</Fab>
 			</div>
