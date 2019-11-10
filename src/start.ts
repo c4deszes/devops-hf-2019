@@ -11,14 +11,16 @@ import { randomBytes } from 'crypto';
 //Configure logging
 const log = createLogger({
 	level: 'info',
-	format: format.combine(format.timestamp(), format.json()),
+	format: format.timestamp(),
 	transports: [
 		new File({filename: './logs/log.txt'}),
 		new Console({format: format.combine(format.colorize(), format.simple())})
 	]
 });
+
+//Sets up shutdown hook on Windows
 const os = require('os');
-//
+
 if(process.platform === 'win32') {
 	let readline = require("readline").createInterface({
 		input: process.stdin,
@@ -37,7 +39,8 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
-app.use(cors({origin: '*'}));
+
+app.use(process.env.CORS_DISABLED === 'true' ? cors('*') : cors());
 
 const staticDir = path.join(__dirname, 'public');
 app.use(express.static(staticDir));
@@ -60,7 +63,8 @@ const router = Router();
  * Creates a new room
  */
 router.post('/create', async (req: Request, res: Response) => {
-    //TODO: docker/kubernetes stuff
+	//TODO: docker/kubernetes stuff
+	res.json({ID: randomBytes(3).toString('hex').substring(0, 5).toUpperCase()});
 });
 
 /**
@@ -108,7 +112,7 @@ app.listen(port, () => {
 	
 	consul.agent.service.register(serviceOptions, (err: any) => {
 		if(err) log.error('Failed to register service, cause: ' + err);
-		else log.info('Registered service.');
+		else log.debug('Registered service.');
 	});
 });
 
@@ -117,6 +121,7 @@ process.on('SIGINT', shutdown);
 
 function shutdown() {
 	consul.agent.service.deregister(serviceOptions.id, (err: any) => {
+		log.debug('Deregistered service.');
 		process.exit(0);
 	});
 }

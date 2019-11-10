@@ -43,10 +43,11 @@ The service responds to the following requests
 
 ## Configuration
 
-Environmental variables used
+Environmental variables used in production
 
 |Property |Default value
 |---|---|
 |PORT |8080
+|CORS_DISABLED |false
 |CONSUL_HOST |localhost
 |CONSUL_PORT |8500
