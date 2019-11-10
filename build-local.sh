@@ -1,7 +1,7 @@
 #Build both projects, unless --skip-build is specified
 if [ "$1" != "--skip-build" ]; then
-	(cd ../chat-backend && npm run build)
-	(cd ../chat-frontend && npm run build)
+	(cd ../chat-backend && ./build-local.sh)
+	(cd ../chat-frontend && ./build-local.sh)
 fi
 
 #Copy backend build output into the docker context
