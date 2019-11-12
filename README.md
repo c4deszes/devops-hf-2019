@@ -31,6 +31,9 @@ Run `docker build -f src/main/docker/Dockerfile.multistage -t <repo>/chat-servic
 
 This is going to execute the same Maven steps but in a container and the resulting image will be optimized for GraalVM.
 
+**Note**: application.properties isn't included in the build, you must pass the configuration as environment properties.
+Using `docker run --env-file <path to properties file>` or the `env_file` property in the Docker Compose file.
+
 For more information, see [Quarkus Building Native image](https://quarkus.io/guides/building-native-image)
 
 ## Running the application
