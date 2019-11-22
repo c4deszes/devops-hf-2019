@@ -9,10 +9,11 @@ Run the `start-compose.sh` script
 It starts Consul with two permanent rooms, one using the JVM image and the other running the native image.
 
 The containers can be accessed at the following addresses for further performance evaluation.
+
 |Image |URL |
 |---|---|
-|JVM |ws://localhost:3001/chat |
-|Native |ws://localhost:3002/chat |
+|JVM | [ws://localhost:3001/chat](ws://localhost:3001/chat) |
+|Native |[ws://localhost:3002/chat](ws://localhost:3002/chat) |
 
 
 ### Results
