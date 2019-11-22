@@ -1,0 +1,31 @@
+http {
+	#something something
+	#map $http_upgrade $connection_upgrade {
+    #    default upgrade;
+    #    '' close;
+    #}
+
+	upstream home {
+		{{range service "chat-backend"}}
+		server {{ .Address }}:{{ .Port }};
+		{{end}}
+	}
+
+	server {
+		listen 80;
+
+		location / {
+			proxy_pass http://home;
+		}
+				
+		#location /r/{{ .Id substring 'chat-service-'.length }} {
+		#	# ws://host.com/r/ should be routed to 
+		#	proxy_pass {{.Address}}:{{.Port}}/chat;
+			
+		#	proxy_set_header Upgrade $http_upgrade;
+		#	proxy_set_header Connection $connection_upgrade;
+		#	proxy_http_version 1.1;
+		#}
+		#{{end}}
+	}
+}

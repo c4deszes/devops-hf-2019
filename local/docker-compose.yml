@@ -1,0 +1,39 @@
+version: "3.5"
+services:
+  chat-home:
+    image: devops-hf/chat-home
+    depends_on:
+      - consul
+    environment:
+      - CONSUL_HOST=consul
+    ports:
+      - '80:8080/tcp'
+    networks:
+      - local
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+  chat-service:
+    image: devops-hf/chat-service:jvm
+    depends_on: 
+      - consul
+    environment: 
+      - 'consul.host=consul'
+      - 'chat.kill-empty=false'
+    networks:
+      - local
+  consul:
+    image: consul
+    command: [ "agent", "-server", "-ui", "-node=server-1", "-bootstrap-expect=1", "-client=0.0.0.0" ]
+    ports:
+      - '8300:8300'
+      - '8301:8301'
+      - '8301:8301/udp'
+      - '8500:8500'
+      - '8600:8600'
+      - '8600:8600/udp'
+    networks:
+      - local
+networks:
+  local:
+    name: local
+    driver: bridge
