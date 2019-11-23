@@ -47,6 +47,7 @@ Environmental variables used in production
 
 |Property |Default value
 |---|---|
+|CHAT_IMAGE |devops-hf/chat-service:native |
 |PORT |8080
 |CORS_DISABLED |false
 |CONSUL_HOST |localhost

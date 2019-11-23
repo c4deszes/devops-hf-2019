@@ -59,12 +59,50 @@ interface Room {
 
 const router = Router();
 
+let http = require('http');
+let DockerAPI = require('dockerode');
+let docker = new DockerAPI();
+
 /**
  * Creates a new room
  */
 router.post('/create', async (req: Request, res: Response) => {
-	//TODO: docker/kubernetes stuff
-	res.json({ID: randomBytes(3).toString('hex').substring(0, 5).toUpperCase()});
+	docker.createContainer({
+			Image: process.env.CHAT_IMAGE,
+			Env: [
+				"chat.room-id=" + randomBytes(3).toString('hex')
+			],
+			HostConfig: {
+				NetworkMode: 'local'
+			}
+		}, 
+		(err: any, container: any) => {
+
+		container.start((err: any, data: any) => {
+			container.inspect((err: any, data: any) => {
+				let request = http.get({
+					hostname: data.Config.Hostname,
+					port: 8080,
+					path: '/health',
+					timeout: 2000
+				}, (response: any) => {
+					let data = '';
+					response.on('data', (chunk: any) => {
+						data += chunk;
+					});
+					response.on('end', () => {
+						log.info(data);
+						let id = JSON.parse(data).checks[0].data.id;
+						res.status(200).json(
+							{ID: id}
+						);
+					});
+				});
+				request.on('error', (error:any) => log.error(error));
+				request.on('timeout', () => log.error('Request timeout, ' + request));
+			});
+		});
+	});
 });
 
 /**
