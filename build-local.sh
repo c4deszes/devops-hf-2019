@@ -12,7 +12,7 @@ cp ../chat-backend/package.json build/package.json
 cp ../chat-backend/package-lock.json build/package-lock.json
 
 #Copy frontend build output
-cp -R ../chat-frontend/build build
+cp -R ../chat-frontend/dist build
 
 #Run docker build
 docker build -t devops-hf/chat-home build -f Dockerfile
