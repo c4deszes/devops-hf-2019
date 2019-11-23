@@ -19,7 +19,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+	"postbuild": "mkdir dist & mkdir dist/public & mv build dist/public"
   },
   "eslintConfig": {
     "extends": "react-app"
