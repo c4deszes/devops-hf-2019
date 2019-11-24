@@ -6,18 +6,13 @@ jobs:
   native:
     name: Native
     runs-on: ubuntu-latest
-    container: 
-      image: quay.io/quarkus/centos-quarkus-maven:19.2.1
     steps:
       - uses: actions/checkout@v1
         with:
           ref: ${{ github.ref }}
 
-      - name: Build
-        run: mvn package -Pnative -Dnative-image.docker-build=true
-
-      - name: Dockerize
-        run: docker build -f src/main/docker/Dockerfile.native -t output .
+      - name: Build & Dockerize
+        run: docker build -f src/main/docker/Dockerfile.multistage -t output .
 
       - name: Publish
         run: |
@@ -40,7 +35,7 @@ jobs:
         run: mvn package
 
       - name: Dockerize
-        run: docker build src/main/docker/Dockerfile.jvm -t output .
+        run: docker build -f src/main/docker/Dockerfile.jvm -t output .
 
       - name: Publish
         run: |
