@@ -6,13 +6,13 @@
   <artifactId>chat-service</artifactId>
   <version>1.0.0-RELEASE</version>
   <properties>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <surefire-plugin.version>2.22.0</surefire-plugin.version>
-    <quarkus.version>0.23.2</quarkus.version>
+    <quarkus.version>1.0.0.CR2</quarkus.version>
+    <surefire-plugin.version>2.22.1</surefire-plugin.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -24,41 +24,51 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
   <dependencies>
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-junit5</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-undertow-websockets</artifactId>
-	</dependency>
-	<dependency>
 		<groupId>io.quarkus</groupId>
-		<artifactId>quarkus-scheduler</artifactId>
-	</dependency>
-	<dependency>
+		<artifactId>quarkus-junit5</artifactId>
+		<scope>test</scope>
+	  </dependency>
+	  <dependency>
 		<groupId>io.quarkus</groupId>
-		<artifactId>quarkus-smallrye-health</artifactId>
-	</dependency>
-	<dependency>
-		<groupId>io.quarkus</groupId>
-		<artifactId>quarkus-vertx</artifactId>
-	</dependency>
-	<dependency>
-		<groupId>io.vertx</groupId>
-		<artifactId>vertx-consul-client</artifactId>
-		<version>3.8.3</version>
-	</dependency>
-	<dependency>
-		<groupId>org.apache.commons</groupId>
-		<artifactId>commons-lang3</artifactId>
-		<version>3.9</version>
-	</dependency>
+		<artifactId>quarkus-undertow-websockets</artifactId>
+	  </dependency>
+	  <dependency>
+		  <groupId>io.quarkus</groupId>
+		  <artifactId>quarkus-scheduler</artifactId>
+	  </dependency>
+	  <dependency>
+		  <groupId>io.quarkus</groupId>
+		  <artifactId>quarkus-smallrye-health</artifactId>
+	  </dependency>
+	  <dependency>
+		  <groupId>io.quarkus</groupId>
+		  <artifactId>quarkus-vertx</artifactId>
+	  </dependency>
+	  <dependency>
+		  <groupId>io.vertx</groupId>
+		  <artifactId>vertx-consul-client</artifactId>
+		  <version>3.8.3</version>
+	  </dependency>
+	  <dependency>
+		  <groupId>org.apache.commons</groupId>
+		  <artifactId>commons-lang3</artifactId>
+		  <version>3.9</version>
+	  </dependency>
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${surefire-plugin.version}</version>
+        <configuration>
+          <systemProperties>
+            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+          </systemProperties>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
@@ -71,15 +81,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${surefire-plugin.version}</version>
-        <configuration>
-          <systemProperties>
-            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-          </systemProperties>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
   <profiles>
@@ -89,7 +90,10 @@
         <property>
           <name>native</name>
         </property>
-      </activation>
+	  </activation>
+	  <properties>
+		<quarkus.native.additional-build-args>-H:ResourceConfigurationFiles=${project.basedir}/src/main/resources/resources-config.json</quarkus.native.additional-build-args>
+	  </properties>
       <build>
         <plugins>
           <plugin>
@@ -108,6 +112,7 @@
             </executions>
           </plugin>
           <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
             <version>${surefire-plugin.version}</version>
             <executions>

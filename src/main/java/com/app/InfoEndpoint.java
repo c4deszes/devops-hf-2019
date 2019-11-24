@@ -1,6 +1,7 @@
 package com.app;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
@@ -8,11 +9,14 @@ import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
 import org.eclipse.microprofile.health.Liveness;
 
+import io.quarkus.runtime.StartupEvent;
+
 /**
  * Endpoint exposes service health information, accessed via /health by default
  */
 @ApplicationScoped
 public class InfoEndpoint {
+
 
 	@Inject
 	SessionService sessionService;

@@ -28,7 +28,7 @@ public class ConsulAgent {
 	@ConfigProperty(name = "consul.host", defaultValue = "127.0.0.1")
 	String consulIp;
 
-	@ConfigProperty(name = "consul.port", defaultValue = "8080")
+	@ConfigProperty(name = "consul.port", defaultValue = "8500")
 	int consulPort;
 
 	@ConfigProperty(name = "quarkus.http.port")

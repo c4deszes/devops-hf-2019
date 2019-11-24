@@ -5,7 +5,7 @@ pipeline {
     agent {
         docker {
 			//This image contains the GraalVM installation
-            image 'quay.io/quarkus/centos-quarkus-maven:19.2.0.1'
+            image 'quay.io/quarkus/centos-quarkus-maven:19.2.1'
         }
     }
     stages {

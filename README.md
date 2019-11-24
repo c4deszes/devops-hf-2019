@@ -55,6 +55,7 @@ Run `docker run -i --rm <repo>/chat-service:<version>`
 
 |Property |Default value |Description |
 |---|---|---|
+|chat.room-id | | Room identifier, **must be provided**
 |chat.max-clients |2 |Maximum number of concurrent websocket connections |
 |chat.kill-empty |true | The service terminates if there're no users connected
 |chat.clear-interval |30s |Periodically timed out clients will be removed, uses Go's timeformat |
@@ -66,6 +67,28 @@ Run `docker run -i --rm <repo>/chat-service:<version>`
 Connect to `ws:/<SERVER_IP>:<SERVER_PORT>/chat`
 
 You can test the service by using a websocket client like [Simple WebSocket Client](https://chrome.google.com/webstore/detail/simple-websocket-client/pfdhoblngboilpfeibdedpjgfnlcodoo)
+
+### Health endpoint
+
+`GET /health` will return health and service information. 
+
+Example response:
+
+
+	{
+	"status": "UP",
+	"checks": [
+		{
+			"name": "room",
+			"status": "UP",
+			"data": {
+				"maxClients": 2,
+				"clients": 0,
+				"id": "PEV3U"
+			}
+		}
+	]
+	}
 
 ## About
 

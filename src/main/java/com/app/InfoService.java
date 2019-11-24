@@ -1,9 +1,17 @@
 package com.app;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.quarkus.runtime.StartupEvent;
 
 /**
  * This service is used to generate a random identifier for this chat room
@@ -11,17 +19,13 @@ import org.apache.commons.lang3.RandomStringUtils;
 @ApplicationScoped
 public class InfoService {
 
-	/**
-	 * Generated identifier
-	 */
-	private String id;
+	static final Logger log = LoggerFactory.getLogger(InfoService.class);
 
-	/**
-	 * Generates random identifier
-	 */
-	@PostConstruct
-	public void init() {
-		this.id = RandomStringUtils.randomAlphanumeric(5).toUpperCase();
+	@ConfigProperty(name = "chat.room-id")
+	String id;
+
+	public void onStartup(@Observes StartupEvent event) {
+		log.info("Service started with ID: " + id);
 	}
 
 	/**
