@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
         with:
-          ref: $GIT_REF
+          ref: ${{ github.ref }}
 
       - name: Build
         run: mvn package -Pnative -Dnative-image.docker-build=true
@@ -34,7 +34,7 @@ jobs:
 
       - uses: actions/checkout@v1
         with: 
-          ref: $GIT_REF
+          ref: ${{ github.ref }}
 
       - name: Build
         run: mvn package
