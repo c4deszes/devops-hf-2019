@@ -16,6 +16,8 @@ jobs:
 
       - name: Publish
         run: |
+          echo "${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}" | docker login docker.pkg.github.com -u c4deszes --password-stdin
+
           IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/chat-service:native
           docker tag output $IMAGE_ID
           docker push $IMAGE_ID
@@ -39,6 +41,8 @@ jobs:
 
       - name: Publish
         run: |
+          echo "${{ secrets.GITHUB_PACKAGE_REGISTRY_TOKEN }}" | docker login docker.pkg.github.com -u c4deszes --password-stdin
+
           IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/chat-service:jvm
           docker tag output $IMAGE_ID
           docker push $IMAGE_ID
