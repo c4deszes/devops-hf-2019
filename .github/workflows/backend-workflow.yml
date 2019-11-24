@@ -1,0 +1,32 @@
+name: 'Chat Backend build'
+on: [push]
+
+jobs:
+  build:
+    name: 'Build & Archive'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+      - name: 'Install'
+        run: npm install
+      - name: 'Build'
+        run: npm run build
+        env:
+          CI: 'true'
+      - run: |
+          mkdir archive
+          mv dist archive
+          mv env archive
+          mv package.json archive
+          mv package-lock.json archive
+      - uses: actions/upload-artifact@v1
+        with:
+          name: ${{ github.ref }}
+          path: /archive
+
+    
