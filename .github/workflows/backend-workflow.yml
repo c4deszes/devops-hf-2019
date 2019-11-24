@@ -27,6 +27,6 @@ jobs:
       - uses: actions/upload-artifact@v1
         with:
           name: chat-backend
-          path: /archive
+          path: archive
 
     
