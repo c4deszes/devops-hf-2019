@@ -1,0 +1,33 @@
+name: 'Chat Frontend build'
+on: [push]
+
+jobs:
+  build:
+    name: 'Build & Archive'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: actions/checkout@v1
+        name: Checkout
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v1
+        name: Setup
+        with:
+          node-version: '10.x'
+      - name: 'Install'
+        run: npm install
+      - name: 'Build'
+        run: npm run build
+        env:
+          CI: 'true'
+      - run: | 
+          mkdir archive
+          mv dist archive
+        name: Archive
+      - uses: actions/upload-artifact@v1
+        name: Upload artifact
+        with:
+          name: chat-frontend
+          path: archive
+
+    
