@@ -1,42 +1,40 @@
+def branch_name = "${BRANCH_NAME}"
 pipeline {
-	environment {
-		IMAGE_REPO = '' //
-	}
-    agent {
-        docker {
-			//This image contains the GraalVM installation
-            image 'quay.io/quarkus/centos-quarkus-maven:19.2.1'
+  environment {
+    registry = "eu.gcr.ui/devops-hf/chat-service"
+    registryCredential = ''
+    dockerImage = ''
+    IMAGE_TAG = "$BUILD_NUMBER"
+    NAMESPACE = "chat"
+    DOMAIN = "mbraptor.tech"
+  }
+  agent any
+  stages {
+    stage('Build image') {
+      steps{
+        script {
+          dockerImage = docker.build registry + ":$IMAGE_TAG"
         }
+      }
     }
-    stages {
-		stage('Build Native') {
-			steps {
-				//sh mvn clean package -Pnative -Dnative-image.docker-build=true
-				//sh docker build -f src/main/docker/Dockerfile.native -t ${IMAGE_REPO}:native-${VERSION}
-
-				/*
-					NOTE: instructions are inside Dockerfile.native as well
-				*/
-			}
-			post {
-				success {
-					//docker push with credentials
-				}
-			}
-		}
-		stage('Build JVM') {
-			steps {
-				//sh mvn clean package 
-				//sh docker build -f src/main/docker/Dockerfile.jvm -t ${IMAGE_REPO}:jvm-${VERSION}
-			}
-			post {
-				sucsess {
-					//docker push with credentials
-				}
-			}
-		}
-		post {
-			//clean workspace
-		}
+    stage('Push image to GCR') {
+      steps{
+        script {
+          docker.withRegistry("https://" + registry) {
+            dockerImage.push()
+          }
+        }
+      }
     }
+    stage('Remove unused image') {
+      steps{
+        sh(script: "docker rmi $registry:$IMAGE_TAG", returnStdout: true)
+      }
+    }
+    stage('Deploy to Kubernetes') {
+      steps{
+        sh(script: "echo TODO", returnStdout: true)
+      }
+    }
+  }
 }
