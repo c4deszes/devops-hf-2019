@@ -1,0 +1,11 @@
+sidecar:
+  datasources:
+    enabled: true
+    label: grafana_datasource
+
+persistence:
+  enabled: true
+  storageClass:
+  annotations: {}
+  accessMode: "ReadWriteOnce"
+  size: "8Gi"
