@@ -1,7 +1,7 @@
 def branch_name = "${BRANCH_NAME}"
 pipeline {
   environment {
-    registry = "eu.gcr.ui/devops-hf/chat-service"
+    registry = "eu.gcr.io/devops-hf/chat-service"
     registryCredential = ''
     dockerImage = ''
     IMAGE_TAG = "$BUILD_NUMBER"
