@@ -8,18 +8,12 @@ pipeline {
     NAMESPACE = "chat"
     DOMAIN = "mbraptor.tech"
   }
-  agent {
-		// Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
-	dockerfile {
-		filename 'src/main/docker/Dockerfile.multistage'
-		dir '.'
-	}
-  }
+  agent any
   stages {
     stage('Build image') {
       steps{
         script {
-          dockerImage = docker.build registry + ":$IMAGE_TAG"
+          dockerImage = docker.build(registry + ":$IMAGE_TAG", "-f src/main/docker/Dockerfile.multistage .")
         }
       }
     }
