@@ -17,16 +17,18 @@ master:
   # Used for label app.kubernetes.io/component
   componentName: "jenkins-master"
   image: "msbence/jenkins-docker-kubectl"
-  tag: "aws"
+  tag: "google"
   imagePullPolicy: "Always"
   imagePullSecretName:
   # Optionally configure lifetime for master-container
   lifecycle:
-  #  postStart:
-  #    exec:
-  #      command:
-  #      - "uname"
-  #      - "-a"
+    postStart:
+      exec:
+        command:
+        - "gcloud"
+        - "auth"
+        - "configure-docker"
+        - "--quiet"
   numExecutors: 1
   customJenkinsLabels: []
   # configAutoReload requires UseSecurity is set to true:

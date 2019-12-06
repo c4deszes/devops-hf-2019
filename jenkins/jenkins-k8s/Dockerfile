@@ -26,6 +26,12 @@ RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s
     && chmod +x ./kubectl \
     && mv ./kubectl /usr/local/bin/kubectl
 
-RUN pip3 install awscli --upgrade
+RUN apt-get update && apt-get install -y -qq --no-install-recommends wget unzip python openssh-client && apt-get clean
+RUN wget https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.zip && unzip google-cloud-sdk.zip && rm google-cloud-sdk.zip
+RUN google-cloud-sdk/install.sh --usage-reporting=false --path-update=true --bash-completion=true --rc-path=/.bashrc --disable-installation-options
+RUN mkdir /.ssh
+ENV PATH /google-cloud-sdk/bin:$PATH
+
+#RUN pip3 install awscli --upgrade
 
 USER jenkins
