@@ -21,6 +21,7 @@ rules:
   - statefulsets
   - clusterroles
   - rolebindings
+  - serviceaccounts
   verbs:
   - create
   - delete
