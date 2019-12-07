@@ -12,9 +12,7 @@ pipeline {
   stages {
     stage('Build image') {
       steps{
-		withMaven() {
-			sh "mvn clean package"
-		}
+		sh "mvn -B clean package"
         script {
           dockerImage = docker.build(registry + ":$IMAGE_TAG", "-f src/main/docker/Dockerfile.jvm .")
         }
