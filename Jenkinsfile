@@ -4,7 +4,7 @@ pipeline {
     registry = "eu.gcr.io/devops-hf/chat-server"
     registryCredential = ''
     dockerImage = ''
-    IMAGE_TAG = "$BUILD_NUMBER"
+    IMAGE_TAG = "latest"
     NAMESPACE = "chat"
     DOMAIN = "mbraptor.tech"
   }
