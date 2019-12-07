@@ -1,13 +1,9 @@
-FROM node AS backend
-
-#Installs backend dependencies
+FROM eu.gcr.io/devops-hf/chat-artifact-frontend AS artifact-frontend
 WORKDIR /usr/src/app
-COPY package*.json ./
-RUN npm install
 
-#Copies build output
-COPY /dist ./dist
-COPY /env ./env
-
+FROM eu.gcr.io/devops-hf/chat-artifact-backend AS backend
+WORKDIR /usr/src/app
+COPY --from=artifact-frontend /usr/src/app/dist/public ./dist/public
+RUN ["npm", "install"]
 EXPOSE 8080
-CMD ["npm", "run", "start"]
+ENTRYPOINT ["npm", "run", "start"]
