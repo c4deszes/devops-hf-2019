@@ -2,16 +2,6 @@
 
 Application entrypoint, allows the discovery and creation of chat rooms. Also used to serve the frontend files.
 
-This service has an integrated Consul agent, it will register using a random identifier.
-
-A service instance entry will look something like this
-
-	{
-		Name: 'chat-backend'
-		ID: 'chat-backend-abcdefghijk'
-		Tags: [ '1.0.0' ]
-	}
-
 ## Running in development mode
 
 Run `npm run start-dev`, this is needed because it uses Typescript so there's no `start.js`
@@ -47,8 +37,5 @@ Environmental variables used in production
 
 |Property |Default value
 |---|---|
-|CHAT_IMAGE |devops-hf/chat-service:native |
 |PORT |8080
 |CORS_DISABLED |false
-|CONSUL_HOST |localhost
-|CONSUL_PORT |8500

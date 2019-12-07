@@ -8,27 +8,27 @@ import { createLogger, format, transports } from 'winston';
 const { File, Console } = transports;
 import { randomBytes } from 'crypto';
 
-//Configure logging
+// Configure logging
 const log = createLogger({
 	level: 'info',
 	format: format.timestamp(),
 	transports: [
 		new File({filename: './logs/log.txt'}),
-		new Console({format: format.combine(format.colorize(), format.simple())})
-	]
+		new Console({format: format.combine(format.colorize(), format.simple())}),
+	],
 });
 
-//Sets up shutdown hook on Windows
+// Sets up shutdown hook on Windows
 const os = require('os');
 
-if(process.platform === 'win32') {
-	let readline = require("readline").createInterface({
+if (process.platform === 'win32') {
+	const readline = require('readline').createInterface({
 		input: process.stdin,
-		output: process.stdout
+		output: process.stdout,
 	});
-	readline.on("SIGINT", shutdown);
-	readline.on("SIGTERM", shutdown);
-	log.info("Registered win32 shutdown hook.");
+	readline.on('SIGINT', shutdown);
+	readline.on('SIGTERM', shutdown);
+	log.info('Registered win32 shutdown hook.');
 }
 
 // Init express
@@ -47,79 +47,46 @@ app.use(express.static(staticDir));
 
 ////////////////////////////////////////////////////////////////////////////
 
-let serviceId = randomBytes(8).toString('hex');
-
-log.info("Service started, id: " + serviceId);
-
-let consul = require('consul')({host: process.env.CONSUL_HOST, port: process.env.CONSUL_PORT});
-
-interface Room {
+interface IRoom {
 	ID: string;
 }
 
 const router = Router();
 
-let http = require('http');
-let DockerAPI = require('dockerode');
-let docker = new DockerAPI();
+const http = require('http');
+
+import { V1Pod, V1NamespaceList, V1Namespace, V1PodList, CoreV1Api } from '@kubernetes/client-node';
+
+const k8s = require('@kubernetes/client-node');
+const kc = new k8s.KubeConfig();
+
+kc.loadFromDefault();
+
+const k8sApi:CoreV1Api = kc.makeApiClient(k8s.CoreV1Api);
 
 /**
  * Creates a new room
  */
 router.post('/create', async (req: Request, res: Response) => {
-	docker.createContainer({
-			Image: process.env.CHAT_IMAGE,
-			Env: [
-				"chat.room-id=" + randomBytes(3).toString('hex')
-			],
-			HostConfig: {
-				NetworkMode: 'local'
-			}
-		}, 
-		(err: any, container: any) => {
-
-		container.start((err: any, data: any) => {
-			container.inspect((err: any, data: any) => {
-				let request = http.get({
-					hostname: data.Config.Hostname,
-					port: 8080,
-					path: '/health',
-					timeout: 2000
-				}, (response: any) => {
-					let data = '';
-					response.on('data', (chunk: any) => {
-						data += chunk;
-					});
-					response.on('end', () => {
-						log.info(data);
-						let id = JSON.parse(data).checks[0].data.id;
-						res.status(200).json(
-							{ID: id}
-						);
-					});
-				});
-				request.on('error', (error:any) => log.error(error));
-				request.on('timeout', () => log.error('Request timeout, ' + request));
-			});
-		});
-	});
+	//k8sApi.createNamespacedPod();
+	res.send('Not implemented').status(200);
 });
 
 /**
  * Returns all available rooms
  */
 router.get('/rooms', async (req: Request, res: Response) => {
-    consul.agent.service.list((err: any, result: any) => {
-		if(err) return;
-		let map = new Map<string, any>(Object.entries(result));
-		let rooms:Room[] = [];
-		map.forEach((service, id) => {
-			if(service.Service === "chat-service") {
-				let a: Room = {ID: service.Meta.inst};
-				rooms.push(a);
+    k8sApi.listNamespacedPod('default').then((result: any) => {
+		let rooms: IRoom[] = [];
+		const namespace: V1PodList = result.body;
+		namespace.items.forEach((element: V1Pod) => {
+			if (element.metadata ) {
+				if (element.metadata.name === 'chat-service') {
+					rooms.push({ID: element.metadata.uid ? element.metadata.uid : 'undefined'});
+				}
 			}
 		});
-		res.json(rooms);
+		res.json(rooms).status(200);
 	});
 });
 
@@ -133,33 +100,16 @@ app.get('*', (req: Request, res: Response) => {
     res.sendFile('index.html', {root: staticDir});
 });
 
-const appInfo = require('./../package.json');
-
 const port = Number(process.env.PORT || 3000);
-
-const serviceOptions = {
-	name: appInfo.name,
-	id: appInfo.name+'-'+serviceId,
-	tags: [appInfo.version],
-	port: port
-};
 
 // Start the server
 app.listen(port, () => {
 	log.info('Server started on port: ' + port);
-	
-	consul.agent.service.register(serviceOptions, (err: any) => {
-		if(err) log.error('Failed to register service, cause: ' + err);
-		else log.debug('Registered service.');
-	});
 });
 
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
 
 function shutdown() {
-	consul.agent.service.deregister(serviceOptions.id, (err: any) => {
-		log.debug('Deregistered service.');
-		process.exit(0);
-	});
+
 }
