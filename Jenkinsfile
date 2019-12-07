@@ -33,7 +33,7 @@ pipeline {
     }
 	stage('Deploy to Kubernetes') {
 		steps{
-        sh(script: "echo TODO", returnStdout: true)
+        sh(script: "kubectl -n $NAMESPACE apply -f chat-server.yaml && sleep 10", returnStdout: true)
 		  }
 	  }
   }
