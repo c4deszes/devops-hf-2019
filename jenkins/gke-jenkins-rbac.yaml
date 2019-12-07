@@ -8,6 +8,7 @@ rules:
   - "apps"
   - "networking.k8s.io"
   - "autoscaling"
+  - "rbac.authorization.k8s.io"
   resources:
   - pods
   - configmaps
@@ -18,6 +19,8 @@ rules:
   - apps
   - horizontalpodautoscalers
   - statefulsets
+  - clusterroles
+  - rolebindings
   verbs:
   - create
   - delete
