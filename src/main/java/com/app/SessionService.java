@@ -92,7 +92,7 @@ public class SessionService implements Closeable {
 	 * 
 	 * If the registry is empty then the service may terminate if chat.kill-empty property is set
 	 */
-	@Scheduled(every = "{chat.clear-interval}", delay = 20, delayUnit = TimeUnit.SECONDS)
+	@Scheduled(every = "{chat.clear-interval}", delay = 60, delayUnit = TimeUnit.SECONDS)
 	public void clearSessions() {
 		sessions.entrySet()
 				.removeIf(session -> {
