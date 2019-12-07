@@ -76,17 +76,25 @@ router.post('/create', async (req: Request, res: Response) => {
 	const serviceObj = JSON.parse(serviceTemplate.replace(regexpr, id));
 	const podObj = JSON.parse(podTemplate.replace(regexpr, id));
 
-	k8sNetworking.createNamespacedIngress(process.env.K8S_NAMESPACE ? process.env.K8S_NAMESPACE : 'default', ingressObj).catch((reason: any) => {
-		console.error(reason);
-	});
+	try {
+		k8sNetworking.createNamespacedIngress(process.env.K8S_NAMESPACE ? process.env.K8S_NAMESPACE : 'default', ingressObj)
+		.then((s: any) => {}).catch((reason: any) => {
+			console.error(reason);
+		});
 
-	k8sCore.createNamespacedService(process.env.K8S_NAMESPACE ? process.env.K8S_NAMESPACE : 'default', serviceObj).catch((reason: any) => {
-		console.error(reason);
-	});
+		k8sCore.createNamespacedService(process.env.K8S_NAMESPACE ? process.env.K8S_NAMESPACE : 'default', serviceObj)
+		.then((s: any) => {}).catch((reason: any) => {
+			console.error(reason);
+		});
 
-	k8sCore.createNamespacedPod(process.env.K8S_NAMESPACE ? process.env.K8S_NAMESPACE : 'default', podObj).catch((reason: any) => {
-		console.error(reason);
-	});
+		k8sCore.createNamespacedPod(process.env.K8S_NAMESPACE ? process.env.K8S_NAMESPACE : 'default', podObj)
+		.then((s: any) => {}).catch((reason: any) => {
+			console.error(reason);
+		});
+	}
+	catch(err) {
+		res.json(err).status(500);
+	}
 
 	res.json({ID: 'undefined'}).status(200);
 });
@@ -95,21 +103,27 @@ router.post('/create', async (req: Request, res: Response) => {
  * Returns all available rooms
  */
 router.get('/rooms', async (req: Request, res: Response) => {
-    k8sCore.listNamespacedPod(process.env.K8S_NAMESPACE ? process.env.K8S_NAMESPACE : 'default').then((result: any) => {
-		let rooms: IRoom[] = [];
-		const namespace: V1PodList = result.body;
-		namespace.items.forEach((element: V1Pod) => {
-			if (element.metadata && element.metadata.labels !== undefined) {
-				if (element.metadata.labels.name === 'chat-service') {
-					rooms.push({ID: element.metadata.labels.instance});
+	try {
+		k8sCore.listNamespacedPod(process.env.K8S_NAMESPACE ? process.env.K8S_NAMESPACE : 'default').then((result: any) => {
+			let rooms: IRoom[] = [];
+			const namespace: V1PodList = result.body;
+			namespace.items.forEach((element: V1Pod) => {
+				if (element.metadata && element.metadata.labels !== undefined) {
+					if (element.metadata.labels.name === 'chat-service') {
+						rooms.push({ID: element.metadata.labels.instance});
+					}
 				}
-			}
+			});
+			res.json(rooms).status(200);
+		}).catch((reason: any) => {
+			console.error(reason);
+			res.send(reason).status(500);
 		});
-		res.json(rooms).status(200);
-	}).catch((reason: any) => {
-		res.send(reason).status(500);
-		console.error(reason);
-	});
+	}
+	catch(err) {
+		console.error(err);
+		res.json(err).status(500);
+	}
 });
 
 router.get('/health', async (req: Request, res: Response) => {
