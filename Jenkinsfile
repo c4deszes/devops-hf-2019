@@ -17,24 +17,5 @@ pipeline {
         }
       }
     }
-    stage('Push image to GCR') {
-      steps{
-        script {
-          docker.withRegistry("https://" + registry) {
-            dockerImage.push()
-          }
-        }
-      }
-    }
-    stage('Remove unused image') {
-      steps{
-        sh(script: "docker rmi $registry:$IMAGE_TAG", returnStdout: true)
-      }
-    }
-	stage('Start merging job') {
-		steps{
-			build job: 'chat-merge-master', wait: false
-		}
-	}
   }
 }
