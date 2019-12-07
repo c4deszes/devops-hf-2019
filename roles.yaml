@@ -18,6 +18,7 @@ rules:
   - apps
   - horizontalpodautoscalers
   - statefulsets
+  - serviceaccounts
   verbs:
   - create
   - delete
