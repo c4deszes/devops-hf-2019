@@ -12,7 +12,6 @@ pipeline {
   stages {
     stage('Build image') {
       steps{
-		sh "mvn -B clean package"
         script {
           dockerImage = docker.build(registry + ":$IMAGE_TAG", "-f src/main/docker/Dockerfile.jvm .")
         }

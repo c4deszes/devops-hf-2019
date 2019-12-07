@@ -14,10 +14,17 @@
 # docker run -i --rm -p 8080:8080 quarkus/code-with-quarkus-jvm
 #
 ###
-FROM fabric8/java-alpine-openjdk8-jre
+FROM maven:latest AS build
+WORKDIR /usr/src/build
+COPY pom.xml ./
+COPY src/ src/
+RUN ["mvn", "package", "-B"]
+
+FROM fabric8/java-alpine-openjdk8-jre AS runner
+WORKDIR /usr/src/app
 ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 ENV AB_ENABLED=jmx_exporter
-COPY target/lib/* /deployments/lib/
-COPY target/*-runner.jar /deployments/app.jar
+COPY --from=build /usr/src/build/target/lib/* /deployments/lib/
+COPY --from=build /usr/src/build/target/*-runner.jar /deployments/app.jar
 EXPOSE 8080
 ENTRYPOINT [ "/deployments/run-java.sh" ]
