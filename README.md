@@ -39,3 +39,4 @@ Environmental variables used in production
 |---|---|
 |PORT |8080
 |CORS_DISABLED |false
+|K8S_NAMESPACE |chat
