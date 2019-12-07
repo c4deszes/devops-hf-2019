@@ -12,7 +12,7 @@
     "containers": [
       {
         "name": "chat-service",
-        "image": "eu.gcr.io/devops-hf/chat-service",
+        "image": "eu.gcr.io/devops-hf/chat-service:latest",
         "resources": {
           "limits": {
             "memory": "128Mi",
