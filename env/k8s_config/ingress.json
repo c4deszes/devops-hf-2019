@@ -23,7 +23,7 @@
         "http": {
           "paths": [
             {
-              "path": "/r/undefined/chat",
+              "path": "/r/undefined/",
               "backend": {
                 "serviceName": "chat-service-undefined",
                 "servicePort": 8080
