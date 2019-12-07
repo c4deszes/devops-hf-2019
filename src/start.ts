@@ -3,7 +3,7 @@ import express from 'express';
 import logger from 'morgan';
 import path from 'path';
 
-import { Request, Response, Router, Express } from 'express';
+import { Request, Response, Router } from 'express';
 import { createLogger, format, transports } from 'winston';
 const { File, Console } = transports;
 import { randomBytes } from 'crypto';
@@ -18,8 +18,6 @@ const log = createLogger({
 	],
 });
 
-// Sets up shutdown hook on Windows
-const os = require('os');
 
 if (process.platform === 'win32') {
 	const readline = require('readline').createInterface({
@@ -53,40 +51,64 @@ interface IRoom {
 
 const router = Router();
 
-const http = require('http');
 
-import { V1Pod, V1NamespaceList, V1Namespace, V1PodList, CoreV1Api } from '@kubernetes/client-node';
+import { V1Pod, V1PodList, CoreV1Api, KubeConfig, NetworkingV1beta1Api } from '@kubernetes/client-node';
+import { readFileSync } from 'fs';
 
-const k8s = require('@kubernetes/client-node');
-const kc = new k8s.KubeConfig();
-
+const kc: KubeConfig = new KubeConfig();
 kc.loadFromDefault();
 
-const k8sApi:CoreV1Api = kc.makeApiClient(k8s.CoreV1Api);
+const k8sCore: CoreV1Api = kc.makeApiClient(CoreV1Api);
+const k8sNetworking: NetworkingV1beta1Api = kc.makeApiClient(NetworkingV1beta1Api);
 
+const ingressTemplate: string = readFileSync('env/k8s_config/ingress.json', 'utf-8');
+const serviceTemplate: string = readFileSync('env/k8s_config/service.json', 'utf-8');
+const podTemplate: string = readFileSync('env/k8s_config/pod.json', 'utf-8');
 /**
  * Creates a new room
  */
 router.post('/create', async (req: Request, res: Response) => {
-	//k8sApi.createNamespacedPod();
-	res.send('Not implemented').status(200);
+	const id = randomBytes(3).toString('hex');
+
+	let regexpr = /undefined/gi;
+
+	const ingressObj = JSON.parse(ingressTemplate.replace(regexpr, id));
+	const serviceObj = JSON.parse(serviceTemplate.replace(regexpr, id));
+	const podObj = JSON.parse(podTemplate.replace(regexpr, id));
+
+	k8sNetworking.createNamespacedIngress(process.env.K8S_NAMESPACE ? process.env.K8S_NAMESPACE : 'default', ingressObj).catch((reason: any) => {
+		console.error(reason);
+	});
+
+	k8sCore.createNamespacedService(process.env.K8S_NAMESPACE ? process.env.K8S_NAMESPACE : 'default', serviceObj).catch((reason: any) => {
+		console.error(reason);
+	});
+
+	k8sCore.createNamespacedPod(process.env.K8S_NAMESPACE ? process.env.K8S_NAMESPACE : 'default', podObj).catch((reason: any) => {
+		console.error(reason);
+	});
+
+	res.json({ID: 'undefined'}).status(200);
 });
 
 /**
  * Returns all available rooms
  */
 router.get('/rooms', async (req: Request, res: Response) => {
-    k8sApi.listNamespacedPod('default').then((result: any) => {
+    k8sCore.listNamespacedPod(process.env.K8S_NAMESPACE ? process.env.K8S_NAMESPACE : 'default').then((result: any) => {
 		let rooms: IRoom[] = [];
 		const namespace: V1PodList = result.body;
 		namespace.items.forEach((element: V1Pod) => {
-			if (element.metadata ) {
-				if (element.metadata.name === 'chat-service') {
-					rooms.push({ID: element.metadata.uid ? element.metadata.uid : 'undefined'});
+			if (element.metadata && element.metadata.labels !== undefined) {
+				if (element.metadata.labels.name === 'chat-service') {
+					rooms.push({ID: element.metadata.labels.instance});
 				}
 			}
 		});
 		res.json(rooms).status(200);
+	}).catch((reason: any) => {
+		res.send(reason).status(500);
+		console.error(reason);
 	});
 });
 

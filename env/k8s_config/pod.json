@@ -1,0 +1,30 @@
+{
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "name": "chat-service-undefined",
+    "labels": {
+      "name": "chat-service",
+      "instance": "undefined"
+    }
+  },
+  "spec": {
+    "containers": [
+      {
+        "name": "chat-service",
+        "image": "eu.gcr.io/devops-hf/chat-service",
+        "resources": {
+          "limits": {
+            "memory": "128Mi",
+            "cpu": "500m"
+          }
+        },
+        "ports": [
+          {
+            "containerPort": 8080
+          }
+        ]
+      }
+    ]
+  }
+}

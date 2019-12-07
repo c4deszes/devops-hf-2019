@@ -25,6 +25,7 @@
     ]
   },
   "include": [
+	"modules.d.ts",
     "src/**/*.ts",
     "spec/**/*.ts"
   ],
