@@ -2,7 +2,10 @@
   "apiVersion": "networking.k8s.io/v1beta1",
   "kind": "Ingress",
   "metadata": {
-    "name": "chat-service-ingress-undefined",
+	"name": "chat-service-undefined",
+	"labels": {
+		"instance": "undefined"
+	},
     "annotations": {
       "kubernetes.io/ingress.class": "nginx",
 	  "nginx.ingress.kubernetes.io/force-ssl-redirect": "true",
