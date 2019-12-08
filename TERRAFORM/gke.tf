@@ -28,7 +28,7 @@ resource "google_container_node_pool" "gke-nodes-devops-hf" {
   initial_node_count = 2
   max_pods_per_node = 110
   node_count        = 2
-  version           = "1.14.8-gke.17"
+  version           = google_container_cluster.gke-devops-hf.node_version
 
   autoscaling {
     max_node_count = 4
