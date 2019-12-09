@@ -29,6 +29,8 @@ const styles = theme => ({
 	}
 });
 
+import { useHistory } from 'react-router-dom';
+
 class Chat extends React.Component {
 
 	componentDidMount() {
@@ -48,20 +50,24 @@ class Chat extends React.Component {
 		}
 
 		ws.onerror = (error) => {
-			
+			useHistory().push("/");
 		}
 
 		ws.onclose = () => {
-			
+			useHistory().push("/");
 		}
 	}
 
-	handleClose() {
-		
+	componentWillUnmount() {
+		this.state.ws.close();
 	}
 
-	componentWillUnmount() {
-		this.ws.close();
+	send() {
+		this.state.ws.send(this.state.message);
+	}
+
+	handleChange(event) {
+		this.setState({message: event.target.value});
 	}
 
 	render() {
@@ -81,8 +87,8 @@ class Chat extends React.Component {
 				</AppBar>
 
 				<div className={classes.message_bar}>
-					<TextField label="Send message" variant="outlined" className={classes.message_field} />
-					<Fab color="primary" size="large" className={classes.message_button}>
+					<TextField label="Send message" variant="outlined" className={classes.message_field} onchange={(event) => this.handleChange(event)} />
+					<Fab color="primary" size="large" className={classes.message_button} onclick={() => this.send()}>
 						<SendIcon />
 					</Fab>
 				</div>

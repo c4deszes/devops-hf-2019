@@ -12,6 +12,8 @@
 /build
 /dist
 
+/env
+
 # misc
 .vscode
 .DS_Store
