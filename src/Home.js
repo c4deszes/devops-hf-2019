@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {makeStyles, withStyles} from '@material-ui/core/styles';
-import Skeleton from '@material-ui/lab/Skeleton';
-import {AppBar, Typography, IconButton, Toolbar, Fab, Box, Card, CardContent} from '@material-ui/core';
+import {withStyles} from '@material-ui/core/styles';
+import {AppBar, Typography, IconButton, Toolbar, Fab, Box} from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import RefreshIcon from '@material-ui/icons/Refresh';
 
@@ -23,6 +22,7 @@ const styles = theme => ({
 	}
 });
 
+/*
 class Room {
 	ID; 
 	users;
@@ -35,16 +35,11 @@ const STATIC_ROOMS = [
 	{ID: "cycyfjl", users: 1, maxUsers: 3},
 	{ID: "hdlslfa", users: 3, maxUsers: 3}
 ];
+*/
 
 const axios = require('axios');
 
 class Home extends React.Component {
-
-	constructor(props) {
-		super(props);
-
-		//try restoring state
-	}
 
 	updateRooms = () => {
 		this.setState({rooms: null});

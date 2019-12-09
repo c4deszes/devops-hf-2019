@@ -7,6 +7,8 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import SendIcon from '@material-ui/icons/Send';
 import {Link} from 'react-router-dom';
 
+import { useHistory } from 'react-router-dom';
+
 const styles = theme => ({
 	message_bar: {
 		display: 'flex',
@@ -29,14 +31,14 @@ const styles = theme => ({
 	}
 });
 
-import { useHistory } from 'react-router-dom';
-
 class Chat extends React.Component {
 
 	componentDidMount() {
 		const id = this.props.match.params.id;
 		let url = new URL('/r/' + id + '/chat', window.location.href);
 		url.protocol = url.protocol.replace('http', 'ws');
+
+		this.history = useHistory();
 
 		let ws = new WebSocket(url.href);
 
@@ -50,11 +52,11 @@ class Chat extends React.Component {
 		}
 
 		ws.onerror = (error) => {
-			useHistory().push("/");
+			this.history.goBack();
 		}
 
 		ws.onclose = () => {
-			useHistory().push("/");
+			this.history.goBack();
 		}
 	}
 
