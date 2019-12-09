@@ -52,7 +52,7 @@ interface IRoom {
 const router = Router();
 
 
-import { V1Pod, V1PodList, CoreV1Api, KubeConfig, NetworkingV1beta1Api } from '@kubernetes/client-node';
+import { V1Pod, V1PodList, CoreV1Api, KubeConfig, NetworkingV1beta1Api, V1PodStatus } from '@kubernetes/client-node';
 import { readFileSync } from 'fs';
 
 const kc: KubeConfig = new KubeConfig();
@@ -96,7 +96,7 @@ router.post('/create', async (req: Request, res: Response) => {
 		res.json(err).status(500);
 	}
 
-	res.json({ID: 'undefined'}).status(200);
+	res.json({ID: id}).status(200);
 });
 
 /**
@@ -108,8 +108,8 @@ router.get('/rooms', async (req: Request, res: Response) => {
 			let rooms: IRoom[] = [];
 			const namespace: V1PodList = result.body;
 			namespace.items.forEach((element: V1Pod) => {
-				if (element.metadata && element.metadata.labels !== undefined) {
-					if (element.metadata.labels.name === 'chat-service') {
+				if (element.metadata && element.metadata.labels !== undefined && element.status !== undefined) {
+					if (element.metadata.labels.name === 'chat-service' && element.status.phase === 'Running') {
 						rooms.push({ID: element.metadata.labels.instance});
 					}
 				}
