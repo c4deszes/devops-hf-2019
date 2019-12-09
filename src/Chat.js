@@ -60,12 +60,6 @@ class Chat extends React.Component {
 		}
 	}
 
-	componentWillUnmount() {
-		if(this.state.ws) {
-			this.state.ws.close();
-		}
-	}
-
 	send() {
 		this.state.ws.send(this.state.message);
 	}
