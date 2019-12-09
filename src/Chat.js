@@ -9,6 +9,9 @@ import SendIcon from '@material-ui/icons/Send';
 import { withRouter } from 'react-router-dom';
 
 const styles = theme => ({
+	message_area: {
+		margin: theme.spacing(2)
+	},
 	message_bar: {
 		display: 'flex',
 		alignItems: 'flex-start',
@@ -71,7 +74,7 @@ class Chat extends React.Component {
 
 		ws.onclose = () => {
 			console.log("Disconnected from room.");
-			this.props.history.goBack();
+			this.props.history.push("/");
 		}
 	}
 
@@ -119,7 +122,7 @@ class Chat extends React.Component {
 					</Toolbar>
 				</AppBar>
 
-				<div>
+				<div className={classes.message_area}>
 					{this.renderMessages(this.state.messages)}
 				</div>
 

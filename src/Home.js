@@ -50,12 +50,13 @@ class Home extends React.Component {
 	}
 
 	updateRooms = () => {
+		this.setState({rooms: null});
 		setTimeout(() => {
 		axios.get('/api/rooms')
 			 .then((response) => {
 				 this.setState({rooms: response.data});
 			 });
-			}, 1000);
+			}, 500);
 	}
 
 	componentDidMount() {
