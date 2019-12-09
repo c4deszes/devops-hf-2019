@@ -7,7 +7,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import SendIcon from '@material-ui/icons/Send';
 import {Link} from 'react-router-dom';
 
-import { useHistory } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
 const styles = theme => ({
 	message_bar: {
@@ -38,8 +38,6 @@ class Chat extends React.Component {
 		let url = new URL('/r/' + id + '/chat', window.location.href);
 		url.protocol = url.protocol.replace('http', 'ws');
 
-		this.history = useHistory();
-
 		let ws = new WebSocket(url.href);
 
 		ws.onopen = () => {
@@ -52,11 +50,11 @@ class Chat extends React.Component {
 		}
 
 		ws.onerror = (error) => {
-			this.history.goBack();
+			this.props.history.goBack();
 		}
 
 		ws.onclose = () => {
-			this.history.goBack();
+			this.props.history.goBack();
 		}
 	}
 
@@ -85,8 +83,8 @@ class Chat extends React.Component {
 				</AppBar>
 
 				<div className={classes.message_bar}>
-					<TextField label="Send message" variant="outlined" className={classes.message_field} onchange={(event) => this.handleChange(event)} />
-					<Fab color="primary" size="large" className={classes.message_button} onclick={() => this.send()}>
+					<TextField label="Send message" variant="outlined" className={classes.message_field} onChange={(event) => this.handleChange(event)} />
+					<Fab color="primary" size="large" className={classes.message_button} onClick={() => this.send()} disabled={() => !this.state.ws}>
 						<SendIcon />
 					</Fab>
 				</div>
@@ -99,4 +97,4 @@ Chat.propTypes = {
 	classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(Chat);
+export default withRouter(withStyles(styles)(Chat));
