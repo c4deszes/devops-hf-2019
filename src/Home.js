@@ -41,18 +41,24 @@ const axios = require('axios');
 
 class Home extends React.Component {
 
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			rooms: null
+		}
+	}
+
 	updateRooms = () => {
-		this.setState({rooms: null});
 		setTimeout(() => {
 		axios.get('/api/rooms')
 			 .then((response) => {
-				 //store state
 				 this.setState({rooms: response.data});
 			 });
 			}, 1000);
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		this.updateRooms();
 	}
 
@@ -60,7 +66,7 @@ class Home extends React.Component {
 		let views = [];
 		for(let i=0;i<rooms.length;i++) {
 			views.push(
-				<RoomCard id={rooms[i].ID} users={'X'} maxUsers={'Y'} />
+				<RoomCard key={i} id={rooms[i].ID} users={'X'} maxUsers={'Y'} />
 			);
 		}
 		return views;
@@ -80,7 +86,7 @@ class Home extends React.Component {
 		let views = [];
 		for(let i=0;i<5;i++) {
 			views.push(
-				<RoomCardSkeleton />
+				<RoomCardSkeleton key={i}/>
 			);
 		}
 		return views;

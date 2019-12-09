@@ -5,7 +5,6 @@ import {withStyles} from '@material-ui/core/styles';
 import {AppBar, Typography, IconButton, Toolbar, Fab, TextField} from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import SendIcon from '@material-ui/icons/Send';
-import {Link} from 'react-router-dom';
 
 import { withRouter } from 'react-router-dom';
 
@@ -33,29 +32,54 @@ const styles = theme => ({
 
 class Chat extends React.Component {
 
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			ws: null,
+			message: '',
+			messages: []
+		};
+	}
+
 	componentDidMount() {
+		this.connect();
+	}
+
+	connect = () => {
 		const id = this.props.match.params.id;
+		//let url = new URL('/chat', "http://127.0.0.1:8080");
 		let url = new URL('/r/' + id + '/chat', window.location.href);
 		url.protocol = url.protocol.replace('http', 'ws');
 
-		let ws = new WebSocket(url.href);
+		var ws = new WebSocket(url.href);
 
 		ws.onopen = () => {
+			this.receive("Connected.");
 			this.setState({ws: ws});
 		}
 		
 		ws.onmessage = (event) => {
-			const message = event.data;
-			console.log('Received:' + message);
+			console.log('Received:' + event.data);
+			this.receive(event.data);
 		}
 
 		ws.onerror = (error) => {
+			console.error(error.message);
 			this.props.history.goBack();
+
+			ws.close();
 		}
 
 		ws.onclose = () => {
+			console.log("Disconnected from room.");
 			this.props.history.goBack();
 		}
+	}
+
+	receive(message) {
+		var messages = this.state.messages.concat(message);
+		this.setState({ messages: messages});
 	}
 
 	send() {
@@ -66,6 +90,20 @@ class Chat extends React.Component {
 		this.setState({message: event.target.value});
 	}
 
+	onBack() {
+		this.state.ws.close();
+	}
+
+	renderMessages(messages) {
+		let views = [];
+		for(let i=0;i<messages.length;i++) {
+			views.push(
+				<p key={i}>{messages[i]}</p>
+			);
+		}
+		return views;
+	}
+
 	render() {
 		const id = this.props.match.params.id;
 		const {classes} = this.props;
@@ -73,7 +111,7 @@ class Chat extends React.Component {
 			<div>
 				<AppBar position="static">
 					<Toolbar>
-						<IconButton aria-label="back" size="medium" component={Link} to="/">
+						<IconButton aria-label="back" size="medium" onClick={() => this.onBack()}>
 							<ArrowBackIcon />
 						</IconButton>
 						<Typography variant="h6">
@@ -82,9 +120,13 @@ class Chat extends React.Component {
 					</Toolbar>
 				</AppBar>
 
+				<div>
+					{this.renderMessages(this.state.messages)}
+				</div>
+
 				<div className={classes.message_bar}>
 					<TextField label="Send message" variant="outlined" className={classes.message_field} onChange={(event) => this.handleChange(event)} />
-					<Fab color="primary" size="large" className={classes.message_button} onClick={() => this.send()} disabled={() => !this.state.ws}>
+					<Fab color="primary" size="large" className={classes.message_button} onClick={() => this.send()} disabled={!this.state.ws}>
 						<SendIcon />
 					</Fab>
 				</div>
