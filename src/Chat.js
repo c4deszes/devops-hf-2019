@@ -66,8 +66,6 @@ class Chat extends React.Component {
 
 		ws.onerror = (error) => {
 			console.error(error.message);
-			this.props.history.goBack();
-
 			ws.close();
 		}
 
@@ -83,6 +81,7 @@ class Chat extends React.Component {
 	}
 
 	send() {
+		this.setState({message: ''});
 		this.state.ws.send(this.state.message);
 	}
 
@@ -125,7 +124,7 @@ class Chat extends React.Component {
 				</div>
 
 				<div className={classes.message_bar}>
-					<TextField label="Send message" variant="outlined" className={classes.message_field} onChange={(event) => this.handleChange(event)} />
+					<TextField label="Send message" variant="outlined" value={this.state.message} className={classes.message_field} onChange={(event) => this.handleChange(event)} />
 					<Fab color="primary" size="large" className={classes.message_button} onClick={() => this.send()} disabled={!this.state.ws}>
 						<SendIcon />
 					</Fab>
