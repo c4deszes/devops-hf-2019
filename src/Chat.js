@@ -9,8 +9,16 @@ import SendIcon from '@material-ui/icons/Send';
 import { withRouter } from 'react-router-dom';
 
 const styles = theme => ({
+	container: {
+		position: 'fixed',
+		width: '100%',
+		height: '100%'
+	},
 	message_area: {
-		margin: theme.spacing(2)
+		margin: theme.spacing(2),
+		overflow: 'auto',
+		minHeight: '100px',
+		maxHeight: 'calc(100% - 168px)',
 	},
 	message_bar: {
 		display: 'flex',
@@ -84,16 +92,32 @@ class Chat extends React.Component {
 	}
 
 	send() {
+		if(this.state.message.length === 0) {
+			return;
+		}
+		if(this.state.ws) {
+			this.state.ws.send(this.state.message);
+		}
 		this.setState({message: ''});
-		this.state.ws.send(this.state.message);
 	}
 
 	handleChange(event) {
 		this.setState({message: event.target.value});
 	}
 
+	keyDown = (event) => {
+		if(event.key === 'Enter') {
+			this.send();
+		}
+	}
+
 	onBack() {
-		this.state.ws.close();
+		if(this.state.ws) {
+			this.state.ws.close();
+		}
+		else {
+			this.props.history.push("/");
+		}
 	}
 
 	renderMessages(messages) {
@@ -110,7 +134,7 @@ class Chat extends React.Component {
 		const id = this.props.match.params.id;
 		const {classes} = this.props;
 		return (
-			<div>
+			<div className={classes.container}>
 				<AppBar position="static">
 					<Toolbar>
 						<IconButton aria-label="back" size="medium" onClick={() => this.onBack()}>
@@ -127,8 +151,8 @@ class Chat extends React.Component {
 				</div>
 
 				<div className={classes.message_bar}>
-					<TextField label="Send message" variant="outlined" value={this.state.message} className={classes.message_field} onChange={(event) => this.handleChange(event)} />
-					<Fab color="primary" size="large" className={classes.message_button} onClick={() => this.send()} disabled={!this.state.ws}>
+					<TextField label="Send message" variant="outlined" value={this.state.message} className={classes.message_field} onKeyDown={this.keyDown} onChange={(event) => this.handleChange(event)} />
+					<Fab color="primary" size="large" className={classes.message_button} onClick={() => this.send()} disabled={!this.state.ws} >
 						<SendIcon />
 					</Fab>
 				</div>
