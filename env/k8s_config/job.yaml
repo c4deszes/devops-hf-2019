@@ -1,0 +1,29 @@
+apiVersion: batch/v1beta1 
+kind: CronJob 
+metadata:   
+  name: chat-service-cleanup
+spec:   
+  schedule: "*/1 * * * *"   
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccount: chat-server-account
+          serviceAccountName: chat-server-account
+          containers:
+          - name: cleaner
+            image: bitnami/kubectl:latest
+            command: ["/bin/sh"]
+            args: 
+              - -c
+              - kubectl get pods --field-selector 'status.phase=Succeeded' -n chat -o name | sed -n -e 's/pod\/\s*\(\S*\).*$/\1/p' | xargs -I @ kubectl delete all,ing --field-selector 'metadata.name=@' -n chat || true
+            volumeMounts:
+            - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+              name: chat-server-account-token-64xct
+              readOnly: true
+          volumes:
+          - name: chat-server-account-token-64xct
+            secret:
+              defaultMode: 420
+              secretName: chat-server-account-token-64xct
+          restartPolicy: Never

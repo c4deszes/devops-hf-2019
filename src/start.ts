@@ -75,28 +75,26 @@ router.post('/create', async (req: Request, res: Response) => {
 	const ingressObj = JSON.parse(ingressTemplate.replace(regexpr, id));
 	const serviceObj = JSON.parse(serviceTemplate.replace(regexpr, id));
 	const podObj = JSON.parse(podTemplate.replace(regexpr, id));
-
-	try {
-		k8sNetworking.createNamespacedIngress(process.env.K8S_NAMESPACE ? process.env.K8S_NAMESPACE : 'default', ingressObj)
-		.then((s: any) => {}).catch((reason: any) => {
-			console.error(reason);
-		});
-
+		
+	k8sCore.createNamespacedPod(process.env.K8S_NAMESPACE ? process.env.K8S_NAMESPACE : 'default', podObj)
+	.then((a: any) => {
 		k8sCore.createNamespacedService(process.env.K8S_NAMESPACE ? process.env.K8S_NAMESPACE : 'default', serviceObj)
-		.then((s: any) => {}).catch((reason: any) => {
-			console.error(reason);
+		.then((b: any) => {
+			k8sNetworking.createNamespacedIngress(process.env.K8S_NAMESPACE ? process.env.K8S_NAMESPACE : 'default', ingressObj)
+			.then((c: any) => {
+				res.json({ID: id}).status(200);
+			}).catch((error) => {
+				console.error(error);
+				res.json(error).status(500);
+			});
+		}).catch((error) => {
+			console.error(error);
+			res.json(error).status(500);
 		});
-
-		k8sCore.createNamespacedPod(process.env.K8S_NAMESPACE ? process.env.K8S_NAMESPACE : 'default', podObj)
-		.then((s: any) => {}).catch((reason: any) => {
-			console.error(reason);
-		});
-	}
-	catch(err) {
-		res.json(err).status(500);
-	}
-
-	res.json({ID: id}).status(200);
+	}).catch((error) => {
+		console.error(error);
+		res.json(error).status(500);
+	});;
 });
 
 /**
