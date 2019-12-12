@@ -15,6 +15,8 @@ The room is written in Quarkus and it implements a websocket chat service. Quark
 
 *Created by [Balazs Eszes](https://github.com/c4deszes) and [Bence Madarasz](https://github.com/msbence)*
 
+[Presentation](https://docs.google.com/presentation/d/1_E6p5FQNrRJT9U7vqXMGranOfDUFm_E1N-12LgOmKBk/edit?usp=sharing)
+
 ## Building
 
 CI is done using Jenkins, every project has it's own Jenkinsfile and Dockerfile. To setup the pipeline check the *infrastructure* branch.
