@@ -8,6 +8,7 @@ rules:
   - "apps"
   - "networking.k8s.io"
   - "autoscaling"
+  - "extensions"
   resources:
   - pods
   - configmaps
